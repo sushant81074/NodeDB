@@ -1,0 +1,16 @@
+1. Key Management
+DEL key              # Delete a key
+EXISTS key           # Check if a key exists
+EXPIRE key seconds   # Set key expiration time
+TTL key              # Get remaining time to live
+TYPE key             # Get the type of a key
+RENAME old new       # Rename a key
+
+2. String Commands
+SET key value        # Set a string value
+GET key              # Get a string value
+APPEND key value     # Append to a string
+INCR key            # Increment integer value
+DECR key            # Decrement integer value
+MSET key1 val1 key2 val2  # Set multiple key-value pairs
+MGET key1 key2      # Get multiple values
