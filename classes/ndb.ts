@@ -1,4 +1,4 @@
-import type { IDel, IGet, ISet } from "../interfaces";
+import type { IDel, IGet, IRename, ISet } from "../interfaces";
 
 export class NodeDB {
   map: Map<string | number, string | number>;
@@ -26,7 +26,12 @@ export class NodeDB {
     console.log("NodeDB>", parsedVal ?? null, typeof parsedVal);
     return parsedVal ?? null;
   }
-  append({}) {}
+  append({ key, value }: ISet) {
+    console.log(key, value);
+    let apndVal = this.map.get(key) ? this.map.get(key) + value : value;
+    this.map.set(key, apndVal);
+    console.log(this.map);
+  }
   del({ keys }: IDel) {
     console.log(keys);
     keys.forEach((key) => {
@@ -37,12 +42,27 @@ export class NodeDB {
     console.log("NodeDB> Ok!", this.map);
     return "Ok!";
   }
-  rename({}) {}
+  rename({ oldKey, newKey }: IRename) {
+    if (!oldKey || !newKey) {
+      console.log(`${oldKey}&${newKey} are invalid`);
+      return;
+    }
+    console.log(oldKey, newKey);
+    let val = this.map.get(oldKey);
+    if (val) {
+      this.map.set(newKey, val);
+      let ttl = this.expireKey.get(oldKey);
+      if (ttl) this.expireKey.set(newKey, ttl);
+      this.map.delete(oldKey);
+      this.expireKey.delete(oldKey);
+      console.log(this.map, this.expireKey);
+    } else {
+      console.error("key value not found");
+    }
+  }
   exists({ key }: IGet): boolean {
     console.log(key);
-    let res: boolean;
-    let val = this.map.get(key);
-    val ? (res = true) : (res = false);
+    let res: boolean = this.map.has(key);
     console.log("NodeDB>", res);
     return res;
   }

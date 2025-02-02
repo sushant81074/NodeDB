@@ -4,7 +4,8 @@ import {
   commandTokenParser,
   delInputParser,
   getExistInputParser,
-  setInputParser,
+  renameInputParser,
+  setAppendInputParser,
 } from "./utility/inputParser";
 import type { IDel, IGet, ISet } from "./interfaces";
 
@@ -29,7 +30,8 @@ io.on("line", (input: string) => {
   switch (command) {
     case "set":
       {
-        const { key, value, ttl }: ISet = setInputParser(input);
+        const { key, value, ttl }: ISet = setAppendInputParser(input);
+
         db.set({ key, value, ttl });
       }
       break;
@@ -40,7 +42,13 @@ io.on("line", (input: string) => {
       }
       break;
     case "append":
-      db.append({});
+      {
+        const { key, value, ttl } = setAppendInputParser(input);
+
+        if (ttl && ttl !== Infinity)
+          console.error("ttl isn't supported with append command");
+        db.append({ key, value });
+      }
       break;
     case "del":
       {
@@ -49,7 +57,10 @@ io.on("line", (input: string) => {
       }
       break;
     case "rename":
-      db.rename({});
+      {
+        const { oldKey, newKey } = renameInputParser(input);
+        db.rename({ oldKey, newKey });
+      }
       break;
     case "exists":
       {

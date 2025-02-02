@@ -1,4 +1,4 @@
-import type { IDel, IGet, ISet } from "../interfaces";
+import type { IDel, IGet, IRename, ISet } from "../interfaces";
 
 export function commandTokenParser(input: string): string {
   let inputArr = input.split(" ");
@@ -6,7 +6,7 @@ export function commandTokenParser(input: string): string {
   return inputArr.length ? inputArr[0].toLowerCase() : "";
 }
 
-export function setInputParser(input: string): ISet {
+export function setAppendInputParser(input: string): ISet {
   // very important step to covert key into number if it is a number else keeping it string
   input = JSON.stringify(input);
   input = JSON.parse(input);
@@ -114,4 +114,41 @@ export function delInputParser(input: string): IDel {
   });
 
   return { keys: finalKeys };
+}
+
+export function renameInputParser(input: string): IRename {
+  // same as setinputparser
+  input = JSON.stringify(input);
+  input = JSON.parse(input);
+
+  // break input command into valid truthy values
+  let inputArr = input.split(" ").filter((e) => e);
+  console.log(input, inputArr);
+
+  // check for the correct length of get command
+  if (inputArr.length !== 3) {
+    console.error(
+      "invalid input command arguments, expected only oldKey and newKey"
+    );
+    return { oldKey: "", newKey: "" };
+  }
+
+  let finalKeys: any = [];
+  inputArr.forEach((key, idx) => {
+    if (idx !== 0) {
+      let parsedKey = Number(key) ? Number(key) : key;
+      let finalKey = parsedKey;
+      if (key.split("").includes("e") || key.split("").includes("n"))
+        finalKey = key;
+      console.log(finalKey, typeof finalKey);
+      finalKeys.push(finalKey);
+    }
+  });
+
+  if (finalKeys.length !== 2) {
+    console.error("invalid input keys");
+    return { oldKey: "", newKey: "" };
+  }
+
+  return { oldKey: finalKeys[0], newKey: finalKeys[1] };
 }
