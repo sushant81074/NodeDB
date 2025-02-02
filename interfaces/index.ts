@@ -1,12 +1,12 @@
-export interface IinputParser {
-  command: string;
+export interface ISet {
   key: number | string;
   value: any;
   ttl: number;
 }
 
-export interface Iset {
+export interface IGet {
   key: number | string;
-  value: any;
-  ttl: number;
+}
+export interface IDel {
+  keys: Array<number | string>;
 }

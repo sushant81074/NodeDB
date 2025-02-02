@@ -1,7 +1,12 @@
 import * as readline from "readline";
 import { NodeDB } from "./classes/ndb";
-import { inputParser } from "./utility/inputParser";
-import type { IinputParser } from "./interfaces";
+import {
+  commandTokenParser,
+  delInputParser,
+  getExistInputParser,
+  setInputParser,
+} from "./utility/inputParser";
+import type { IDel, IGet, ISet } from "./interfaces";
 
 export const io = readline.createInterface({
   input: process.stdin,
@@ -13,28 +18,42 @@ io.setPrompt("NodeDB>");
 io.prompt();
 
 io.on("line", (input: string) => {
-  const { command, key, value, ttl }: IinputParser = inputParser(input);
+  if (!input.length) return;
 
-  if (!command && !key && !value) return;
+  const command = commandTokenParser(input);
+  if (!command) {
+    console.error("no command found in input");
+    return;
+  }
 
   switch (command) {
     case "set":
-      db.set({ key, value, ttl });
+      {
+        const { key, value, ttl }: ISet = setInputParser(input);
+        db.set({ key, value, ttl });
+      }
       break;
     case "get":
-      db.get({});
+      {
+        const { key }: IGet = getExistInputParser(input);
+        db.get({ key });
+      }
       break;
     case "append":
       db.append({});
       break;
     case "del":
-      db.del({});
+      {
+        const { keys }: IDel = delInputParser(input);
+        db.del({ keys });
+      }
       break;
     case "rename":
       db.rename({});
       break;
     case "exists":
-      db.exists({});
+      const { key } = getExistInputParser(input);
+      db.exists({ key });
       break;
     case "expire":
       db.expire({});
