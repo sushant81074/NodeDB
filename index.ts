@@ -52,8 +52,10 @@ io.on("line", (input: string) => {
       db.rename({});
       break;
     case "exists":
-      const { key } = getExistInputParser(input);
-      db.exists({ key });
+      {
+        const { key } = getExistInputParser(input);
+        db.exists({ key });
+      }
       break;
     case "expire":
       db.expire({});
