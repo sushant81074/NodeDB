@@ -1,8 +1,9 @@
 import * as readline from "readline";
 import { NodeDB } from "./classes/ndb";
 import { inputParser } from "./utility/inputParser";
+import type { IinputParser } from "./interfaces";
 
-const io = readline.createInterface({
+export const io = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
@@ -12,10 +13,13 @@ io.setPrompt("NodeDB>");
 io.prompt();
 
 io.on("line", (input: string) => {
-  const { command, key, value } = inputParser(input);
+  const { command, key, value, ttl }: IinputParser = inputParser(input);
+
+  if (!command && !key && !value) return;
+
   switch (command) {
     case "set":
-      db.set({ command });
+      db.set({ key, value, ttl });
       break;
     case "get":
       db.get({});
